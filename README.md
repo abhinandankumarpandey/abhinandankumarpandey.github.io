@@ -18,3 +18,15 @@ View your app in AI Studio: https://ai.studio/apps/drive/19NR9hMfsugSHyr79u29K6-
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+
+
+----
+create site map .xml 
+create seo for website 
+make it faster so sender faster in mobile 
+github readme better 
+--business listing sites 
+-add blogs  keyword listing in seo on code 
+add a good about section , skills , faqs , --add meta data for each page for seo 
+ 
