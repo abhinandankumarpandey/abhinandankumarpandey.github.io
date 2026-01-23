@@ -81,47 +81,47 @@ const Contact: React.FC = () => {
               <form onSubmit={handleSubmit} className="relative z-10 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="space-y-3">
-                    <label className="text-[10px] uppercase font-mono text-zinc-500 tracking-widest ml-1">Identity</label>
+                    <label className="text-sm font-bold uppercase text-zinc-300 tracking-widest ml-1">Name</label>
                     <input
                       required
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-700" placeholder="NAME"
+                      type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-600" placeholder="e.g. Rahul Sharma"
                     />
                   </div>
                   <div className="space-y-3">
-                    <label className="text-[10px] uppercase font-mono text-zinc-500 tracking-widest ml-1">Mail Route</label>
+                    <label className="text-sm font-bold uppercase text-zinc-300 tracking-widest ml-1">Email</label>
                     <input
                       required
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-700" placeholder="EMAIL"
+                      type="email" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-600" placeholder="e.g. rahul@example.com"
                     />
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[10px] uppercase font-mono text-zinc-500 tracking-widest ml-1">Query Subject</label>
+                  <label className="text-sm font-bold uppercase text-zinc-300 tracking-widest ml-1">Subject</label>
                   <input
                     required
                     value={formData.subject}
                     onChange={e => setFormData({ ...formData, subject: e.target.value })}
-                    type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-700" placeholder="SUBJECT"
+                    type="text" className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors placeholder:text-zinc-600" placeholder="e.g. Project Inquiry - Website Redesign"
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[10px] uppercase font-mono text-zinc-500 tracking-widest ml-1">Detail Transmission</label>
+                  <label className="text-sm font-bold uppercase text-zinc-300 tracking-widest ml-1">Message</label>
                   <textarea
                     required
                     value={formData.message}
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
-                    rows={5} className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors resize-none placeholder:text-zinc-700" placeholder="MESSAGE"
+                    rows={5} className="w-full bg-white/5 border border-white/10 rounded-2xl px-8 py-5 focus:outline-none focus:border-indigo-500 transition-colors resize-none placeholder:text-zinc-600" placeholder="Hi Abhinandan, I would like to discuss a project... (Please include your phone number: +91 XXXXXXXXXX)"
                   ></textarea>
                 </div>
                 <button
                   disabled={loading}
                   type="submit" className="w-full py-6 bg-white text-black font-black rounded-3xl hover:scale-[0.98] active:scale-95 transition-all tracking-[0.2em] shadow-xl disabled:opacity-50"
                 >
-                  {loading ? 'TRANSMITTING...' : 'INITIATE TRANSMISSION'}
+                  {loading ? 'TRANSMITTING...' : 'SEND MESSAGE'}
                 </button>
               </form>
             )}

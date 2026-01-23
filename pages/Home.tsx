@@ -4,16 +4,16 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 
 const defaultTrail = [
-  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/posters_service.webp?raw=true", ratio: "aspect-[3/4]" },
-  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/flyers_service.webp?raw=true", ratio: "aspect-video" },
-  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/infographic_explainer.webp?raw=true", ratio: "aspect-square" }
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/posters_service.webp?raw=true", ratio: "aspect-[3/4]", alt: "abhinandan_poster_design_service" },
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/flyers_service.webp?raw=true", ratio: "aspect-video", alt: "banner_by_abhinandan_flyer_design" },
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/infographic_explainer.webp?raw=true", ratio: "aspect-square", alt: "infographic_by_abhinandan" }
 ];
 
 const impactImages = [
-  "https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/ai_visual_thumbnail.webp?raw=true",
-  "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/ads_listing_images+calculator.webp?raw=true",
-  "https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/character_creation_dna.webp?raw=true",
-  "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/movie_poster_design_sahil_pandey.webp?raw=true"
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/ai_visual_thumbnail.webp?raw=true", alt: "ai_visual_thumbnail_abhinandan" },
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/ads_listing_images+calculator.webp?raw=true", alt: "ads_listing_images_abhinandan" },
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/character_creation_dna.webp?raw=true", alt: "character_creation_dna_abhinandan" },
+  { url: "https://github.com/abhinandankumarpandey/website-assets/blob/master/banners/movie_poster_design_sahil_pandey.webp?raw=true", alt: "movie_poster_design_sahil_pandey_abhinandan" }
 ];
 
 const sectionBgImages = [
@@ -22,13 +22,33 @@ const sectionBgImages = [
   "https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true"
 ];
 
+const bannerImages = [
+  "/assets/banners/Ma_as_a_202601111902.webp",
+  "/assets/banners/ads_listing_images+calculator.webp",
+  "/assets/banners/ads_listing_images+calculator_2.webp",
+  "/assets/banners/birthday_poster_design.webp",
+  "/assets/banners/flyers_service.webp",
+  "/assets/banners/infographic_explainer.webp",
+  "/assets/banners/infographics_service.webp",
+  "/assets/banners/movie_poster_design_sahil_pandey.webp",
+  "/assets/banners/poster_advertisement.webp",
+  "/assets/banners/poster_design.webp",
+  "/assets/banners/posters_service.webp",
+  "/assets/banners/product_siting_for_ads_calculator.webp",
+  "/assets/banners/product_siting_for_ads_calculator_2.webp"
+];
+
 const Home: React.FC = () => {
-  const [trail, setTrail] = useState<{ x: number, y: number, id: number, img: string, ratio: string, rotate: number }[]>([]);
+  // ... existing state and effects ...
+  const [trail, setTrail] = useState<{ x: number, y: number, id: number, img: string, ratio: string, rotate: number, alt?: string }[]>([]);
   const [dbTrailImages, setDbTrailImages] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
   const [scrollY, setScrollY] = useState(0);
   const [isHoveringText, setIsHoveringText] = useState(false);
   const [impactIndex, setImpactIndex] = useState(0);
+
+  // ... (rest of the component logic)
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,6 +58,8 @@ const Home: React.FC = () => {
   }, []);
 
   const [sectionBgIndex, setSectionBgIndex] = useState(0);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
   useEffect(() => {
     const timer = setInterval(() => {
       setSectionBgIndex(prev => (prev + 1) % sectionBgImages.length);
@@ -70,7 +92,7 @@ const Home: React.FC = () => {
         const id = Date.now();
         const pool = dbTrailImages.length > 0 ? dbTrailImages : defaultTrail;
         const selection = pool[Math.floor(Math.random() * pool.length)];
-        setTrail(prev => [...prev.slice(-10), { x, y, id, img: selection.url, ratio: selection.ratio || 'aspect-square', rotate: (Math.random() - 0.5) * 20 }]);
+        setTrail(prev => [...prev.slice(-10), { x, y, id, img: selection.url, ratio: selection.ratio || 'aspect-square', rotate: (Math.random() - 0.5) * 20, alt: selection.alt || 'abhinandan_creative_trail' }]);
         setTimeout(() => setTrail(prev => prev.filter(t => t.id !== id)), 1000);
       }
     };
@@ -86,18 +108,96 @@ const Home: React.FC = () => {
     };
   }, [dbTrailImages]);
 
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [isDown, setIsDown] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeftState, setScrollLeftState] = useState(0);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let animationFrameId: number;
+    let scrollSpeed = 0.5;
+
+    const animateScroll = () => {
+      // Pause if hovering OR dragging
+      if (isHoveringText || isDown) {
+        animationFrameId = requestAnimationFrame(animateScroll);
+        return;
+      }
+
+      if (el.scrollLeft >= (el.scrollWidth - el.clientWidth) / 1.5) {
+        el.scrollLeft = 0;
+      } else {
+        el.scrollLeft += scrollSpeed;
+      }
+      animationFrameId = requestAnimationFrame(animateScroll);
+    };
+
+    animationFrameId = requestAnimationFrame(animateScroll);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [isHoveringText, isDown]);
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    const slider = scrollRef.current;
+    if (!slider) return;
+    setIsDown(true);
+    setStartX(e.pageX - slider.offsetLeft);
+    setScrollLeftState(slider.scrollLeft);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const slider = scrollRef.current;
+    if (!slider) return;
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - startX) * 2;
+    slider.scrollLeft = scrollLeftState - walk;
+  };
+
   return (
     <div className="relative bg-[#050505] overflow-x-hidden">
+      {/* Lightbox Modal */}
+      {selectedImage && (
+        <div
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 animate-reveal cursor-zoom-out"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button
+            className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 text-white transition-all duration-300 backdrop-blur-md border border-white/10"
+            aria-label="Close lightbox"
+          >
+            <i className="fas fa-times text-xl"></i>
+          </button>
+          <img
+            src={selectedImage}
+            className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl animate-fade-in-up"
+            alt="Full screen preview"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       {!isHoveringText && trail.map(t => (
         <div key={t.id} className={`fixed pointer-events-none z-[60] w-64 md:w-80 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 animate-image-float ${t.ratio}`}
           style={{ left: t.x - 160, top: t.y - 120, transform: `rotate(${t.rotate}deg)` }}>
-          <img src={t.img} className="w-full h-full object-cover" alt="" />
+          <img src={t.img} className="w-full h-full object-cover" alt={t.alt || "abhinandan_creative_trail"} loading="eager" />
         </div>
       ))}
 
-      <section className="h-[120vh] relative flex items-center justify-center sticky top-0">
-        <div className="absolute inset-0" style={{ transform: `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)` }}>
-          <div className="absolute inset-0 bg-cover bg-center opacity-50" style={{ backgroundImage: `url('https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true')` }} />
+      <section className="h-[120vh] relative flex items-center justify-center sticky top-0 overflow-hidden">
+        {/* Parallax Container with Smooth Transition */}
+        <div className="absolute inset-0 will-change-transform transition-transform duration-75 ease-linear" style={{ transform: `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)` }}>
+          {/* Main Hero Image with Breathing Effect */}
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-50 animate-hero-breathe"
+            style={{ backgroundImage: `url('https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true')` }}
+          />
+          {/* Animated Gradient Overlay */}
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 mix-blend-overlay animate-pulse-slow"></div>
+          {/* Darkening Gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-[#050505]"></div>
         </div>
         <div className="relative z-10 text-center px-4 max-w-7xl mx-auto flex flex-col items-center">
@@ -109,15 +209,15 @@ const Home: React.FC = () => {
               Prompts <span className="text-indigo-500">·</span> Graphics <span className="text-purple-500">·</span> AI
             </span>
           </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-12 font-light tracking-wide leading-relaxed animate-fade-in-up delay-300">
+          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-12 font-light tracking-wide leading-relaxed animate-fade-in-up delay-300 text-shadow-glow">
             Designing the future with pixel-perfect precision and neural network intelligence.
           </p>
           <div className="flex flex-col md:flex-row gap-6 mt-8">
-            <Link to="/services" className="group relative px-12 py-5 bg-white text-black rounded-full overflow-hidden hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] animate-fade-in-up delay-300">
+            <Link to="/services" aria-label="Explore our services" className="group relative px-12 py-5 bg-white text-black rounded-full overflow-hidden hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] animate-fade-in-up delay-300">
               <span className="relative z-10 font-bold uppercase tracking-widest text-sm md:text-base">Enter Experience</span>
               <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
             </Link>
-            <Link to="/contact" className="px-12 py-5 glass rounded-full font-bold uppercase tracking-widest text-sm md:text-base hover:bg-white/10 transition-all duration-300 animate-fade-in-up delay-[400ms]">
+            <Link to="/contact" aria-label="Contact the studio" className="px-12 py-5 glass rounded-full font-bold uppercase tracking-widest text-sm md:text-base hover:bg-white/10 transition-all duration-300 animate-fade-in-up delay-[400ms]">
               Contact Studio
             </Link>
           </div>
@@ -137,21 +237,41 @@ const Home: React.FC = () => {
           <section className="py-20 overflow-hidden relative no-trail">
             <div className="mb-12 text-center">
               <span className="text-xs font-bold uppercase tracking-[0.3em] text-indigo-400">Creative Horizon</span>
-              <h3 className="text-3xl md:text-5xl font-bold mt-4">Infinite Possibilities</h3>
+              <h2 className="text-3xl md:text-5xl font-bold mt-4">Infinite Possibilities</h2>
             </div>
-            <div className="flex space-x-6 animate-scroll-left w-max hover:pause">
-              {[...defaultTrail, ...impactImages, ...sectionBgImages, ...defaultTrail].map((img, idx) => (
-                <div key={idx} className={`relative flex-none rounded-3xl overflow-hidden group w-[20rem] md:w-[30rem] ${idx % 2 === 0 ? 'aspect-video' : 'aspect-[3/4]'} border border-white/10 glass`}>
-                  <img
-                    src={typeof img === 'string' ? img : img.url}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                    alt="Showcase"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-8">
-                    <p className="font-mono text-xs text-white/80">AI GENERATED ASSET #0{idx}</p>
+            {/* Interactive Infinite Scroll Container */}
+            <div
+              className="relative w-full overflow-hidden"
+              onMouseEnter={() => setIsHoveringText(true)}
+              onMouseLeave={() => { setIsHoveringText(false); setIsDown(false); }}
+              onTouchStart={() => setIsHoveringText(true)}
+              onTouchEnd={() => setIsHoveringText(false)}
+            >
+              <div
+                ref={scrollRef}
+                className={`flex space-x-6 overflow-x-auto no-scrollbar w-full px-4 ${isDown ? 'cursor-grabbing' : 'cursor-grab'}`}
+                style={{ scrollBehavior: 'auto' }} // Ensure immediate scrolling for JS
+                onMouseDown={handleMouseDown}
+                onMouseUp={() => setIsDown(false)}
+                onMouseMove={handleMouseMove}
+              >
+                {/* Triple the list to ensure smooth infinite scrolling illusion */}
+                {[...bannerImages, ...bannerImages, ...bannerImages].map((img, idx) => (
+                  <div
+                    key={idx}
+                    className={`relative flex-none rounded-3xl overflow-hidden group w-[20rem] md:w-[30rem] ${idx % 2 === 0 ? 'aspect-video' : 'aspect-[3/4]'} border border-white/10 glass cursor-zoom-in`}
+                    onClick={() => setSelectedImage(img)}
+                  >
+                    <img
+                      src={img}
+                      className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                      alt={`banner_asset_${idx}`}
+                      loading="lazy"
+                      draggable="false"
+                    />
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </section>
 
@@ -163,7 +283,7 @@ const Home: React.FC = () => {
                 {properties.length > 0 ? properties.map((p, i) => (
                   <div key={i} className="group glass rounded-[3rem] overflow-hidden hover:-translate-y-4 transition-all duration-700">
                     <div className="aspect-[4/3] overflow-hidden">
-                      <img src={p.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={p.name} />
+                      <img src={p.image_url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt={p.name} loading="lazy" />
                     </div>
                     <div className="p-10">
                       <span className="text-[10px] uppercase tracking-widest text-indigo-400">{p.location}</span>
@@ -189,9 +309,9 @@ const Home: React.FC = () => {
               <div className="space-y-16">
                 <div>
                   <span className="text-purple-400 font-mono tracking-widest text-sm uppercase mb-4 block">Visual Engineering</span>
-                  <h3 className="text-5xl md:text-7xl font-bold tracking-tighter uppercase leading-none drop-shadow-2xl mb-8">
+                  <h2 className="text-5xl md:text-7xl font-bold tracking-tighter uppercase leading-none drop-shadow-2xl mb-8">
                     Visuals that <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 animate-pulse-slow">Convert.</span>
-                  </h3>
+                  </h2>
                 </div>
                 <p className="text-white/80 text-xl md:text-2xl font-light leading-relaxed text-shadow-glow">
                   We don't just design; we engineer assets that define brands, command attention, and elevate digital presence through the power of generative AI and human creativity.
@@ -211,9 +331,10 @@ const Home: React.FC = () => {
                 {impactImages.map((img, i) => (
                   <img
                     key={i}
-                    src={img}
+                    src={img.url}
                     className={`absolute inset-0 w-full h-full object-cover transition-all duration-1000 group-hover:scale-110 ${i === impactIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
-                    alt="Visual impact"
+                    alt={img.alt}
+                    loading="lazy"
                   />
                 ))}
               </div>
@@ -259,6 +380,18 @@ const Home: React.FC = () => {
         .delay-300 { animation-delay: 0.3s; }
         
         .hover\:pause:hover { animation-play-state: paused; }
+        
+        @keyframes hero-breathe {
+          0%, 100% { transform: scale(1); filter: brightness(1); }
+          50% { transform: scale(1.05); filter: brightness(1.2); }
+        }
+        .animate-hero-breathe { animation: hero-breathe 6s ease-in-out infinite; }
+
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.3; }
+          50% { opacity: 0.6; }
+        }
+        .animate-pulse-slow { animation: pulse-slow 5s ease-in-out infinite; }
       `}</style>
     </div>
   );

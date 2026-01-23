@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Sitemap: https://abhinandankumarpandey.github.io/sitemap.xml
+
+User-agent: Googlebot
+Allow: /
+Disallow: /admin
+Disallow: /login
