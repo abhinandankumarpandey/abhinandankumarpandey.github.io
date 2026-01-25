@@ -18,7 +18,7 @@ const Portfolio: React.FC = () => {
       metaDescription.setAttribute('name', 'description');
       document.head.appendChild(metaDescription);
     }
-    metaDescription.setAttribute('content', 'Portfolio of Abhinandan Kumar Pandey - VibeAI Creative Studio. Explore projects in AI graphics, prompt engineering, video editing, and digital art. 500+ projects delivered.');
+    metaDescription.setAttribute('content', 'Portfolio of Abhinandan Pandey - VibeAI Creative Studio. Explore projects in AI graphics, prompt engineering, video editing, and digital art. 500+ projects delivered.');
 
     const timer = setInterval(() => setBgIndex(prev => (prev + 1) % bgImages.length), 5000);
     return () => clearInterval(timer);

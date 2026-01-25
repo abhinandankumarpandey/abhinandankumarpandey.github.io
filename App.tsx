@@ -137,7 +137,7 @@ const App: React.FC = () => {
           </div>
         </div>
         <div className="mt-20 pt-10 border-t border-white/5 text-center text-zinc-600 text-[10px] uppercase tracking-widest">
-          &copy; 2025 Abhinandan Prompts · Graphics · AI. All rights reserved.
+          &copy; 2026 Abhinandan Prompts · Graphics · AI. All rights reserved.
         </div>
       </footer>
     </div>
