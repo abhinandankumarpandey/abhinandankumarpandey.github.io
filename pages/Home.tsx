@@ -195,7 +195,7 @@ const Home: React.FC = () => {
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
 
           {/* Left Column: Brand & Text */}
-          <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 order-2 lg:order-1">
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 order-1 lg:order-1">
 
             {/* Logo First */}
             <div className="mb-4 animate-fade-in-up">
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
           </div>
 
           {/* Right Column: User Card View */}
-          <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-in-up delay-300 perspective-1000">
+          <div className="relative order-2 lg:order-2 flex justify-center lg:justify-end animate-fade-in-up delay-300 perspective-1000">
             <div className="relative w-full max-w-md aspect-[3/4] glass rounded-[3rem] border border-white/10 p-3 overflow-hidden group shadow-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.3)] transition-all duration-700 hover:-translate-y-2">
 
               {/* Inner Container */}
