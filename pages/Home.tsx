@@ -109,9 +109,7 @@ const Home: React.FC = () => {
   }, [dbTrailImages]);
 
   const scrollRef = React.useRef<HTMLDivElement>(null);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeftState, setScrollLeftState] = useState(0);
+  const lastScrollTime = React.useRef(0);
 
   useEffect(() => {
     const el = scrollRef.current;
@@ -121,8 +119,8 @@ const Home: React.FC = () => {
     let scrollSpeed = 0.5;
 
     const animateScroll = () => {
-      // Pause if hovering OR dragging
-      if (isHoveringText || isDown) {
+      // Yield control to smooth scroll if interaction happened recently
+      if (Date.now() - lastScrollTime.current < 1000) {
         animationFrameId = requestAnimationFrame(animateScroll);
         return;
       }
@@ -137,29 +135,25 @@ const Home: React.FC = () => {
 
     animationFrameId = requestAnimationFrame(animateScroll);
     return () => cancelAnimationFrame(animationFrameId);
-  }, [isHoveringText, isDown]);
+  }, []);
 
-  const handleMouseDown = (e: React.MouseEvent) => {
+  const handleScroll = (direction: 'left' | 'right') => {
     const slider = scrollRef.current;
     if (!slider) return;
-    setIsDown(true);
-    setStartX(e.pageX - slider.offsetLeft);
-    setScrollLeftState(slider.scrollLeft);
-  };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown) return;
-    e.preventDefault();
-    const slider = scrollRef.current;
-    if (!slider) return;
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - startX) * 2;
-    slider.scrollLeft = scrollLeftState - walk;
+    // Pause auto-scroll briefly
+    lastScrollTime.current = Date.now();
+
+    const scrollAmount = window.innerWidth < 768 ? 300 : 500;
+    slider.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
   };
 
   return (
     <div className="relative bg-[#050505] overflow-x-hidden">
-      {/* Lightbox Modal */}
+      {/* Lightbox ... same ... */}
       {selectedImage && (
         <div
           className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center p-4 animate-reveal cursor-zoom-out"
@@ -180,6 +174,7 @@ const Home: React.FC = () => {
         </div>
       )}
 
+      {/* Floating Trail Images */}
       {!isHoveringText && trail.map(t => (
         <div key={t.id} className={`fixed pointer-events-none z-[60] w-64 md:w-80 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 animate-image-float ${t.ratio}`}
           style={{ left: t.x - 160, top: t.y - 120, transform: `rotate(${t.rotate}deg)` }}>
@@ -187,40 +182,88 @@ const Home: React.FC = () => {
         </div>
       ))}
 
-      <section className="h-[120vh] relative flex items-center justify-center sticky top-0 overflow-hidden">
-        {/* Parallax Container with Smooth Transition */}
-        <div className="absolute inset-0 will-change-transform transition-transform duration-75 ease-linear" style={{ transform: `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)` }}>
-          {/* Main Hero Image with Breathing Effect */}
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-50 animate-hero-breathe"
-            style={{ backgroundImage: `url('https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true')` }}
-          />
-          {/* Animated Gradient Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-purple-500/10 mix-blend-overlay animate-pulse-slow"></div>
-          {/* Darkening Gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/10 to-[#050505]"></div>
+      {/* NEW HERO SECTION */}
+      <section className="min-h-[110vh] relative flex items-center justify-center overflow-hidden pt-20 pb-20">
+
+        {/* Parallax Background */}
+        <div className="absolute inset-0 will-change-transform" style={{ transform: `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)` }}>
+          <div className="absolute inset-0 bg-cover bg-center opacity-30 animate-hero-breathe" style={{ backgroundImage: `url('https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true')` }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-black/50 to-purple-900/20 mix-blend-overlay"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]"></div>
         </div>
-        <div className="relative z-10 text-center px-4 max-w-7xl mx-auto flex flex-col items-center">
-          <h1 className="flex flex-col items-center justify-center mb-12 mix-blend-difference">
-            <span className="block text-[12vw] md:text-[10rem] font-black tracking-tighter leading-[0.8] animate-reveal-up bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
-              ABHINANDAN
-            </span>
-            <span className="block text:[4vw] md:text-[2.5rem] font-light tracking-[0.5em] uppercase mt-6 text-white/80 animate-reveal-up animation-delay-200">
-              Prompts <span className="text-indigo-500">·</span> Graphics <span className="text-purple-500">·</span> AI
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl mx-auto mb-12 font-light tracking-wide leading-relaxed animate-fade-in-up delay-300 text-shadow-glow">
-            Designing the future with pixel-perfect precision and neural network intelligence.
-          </p>
-          <div className="flex flex-col md:flex-row gap-6 mt-8">
-            <Link to="/services" aria-label="Explore our services" className="group relative px-12 py-5 bg-white text-black rounded-full overflow-hidden hover:scale-105 transition-all duration-300 shadow-[0_0_40px_rgba(255,255,255,0.3)] animate-fade-in-up delay-300">
-              <span className="relative z-10 font-bold uppercase tracking-widest text-sm md:text-base">Enter Experience</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-            </Link>
-            <Link to="/contact" aria-label="Contact the studio" className="px-12 py-5 glass rounded-full font-bold uppercase tracking-widest text-sm md:text-base hover:bg-white/10 transition-all duration-300 animate-fade-in-up delay-[400ms]">
-              Contact Studio
-            </Link>
+
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+          {/* Left Column: Brand & Text */}
+          <div className="flex flex-col items-center lg:items-start text-center lg:text-left space-y-8 order-2 lg:order-1">
+
+            {/* Logo First */}
+            <div className="mb-4 animate-fade-in-up">
+              <img src="/logo.png" className="w-32 h-32 md:w-40 md:h-40 object-contain drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]" alt="Abhinandan Brand Logo" />
+            </div>
+
+            <h1 className="flex flex-col mix-blend-difference">
+              <span className="text-6xl md:text-8xl lg:text-[7rem] font-black tracking-tighter leading-[0.85] animate-reveal-up text-gradient-liquid pb-4">
+                ABHINANDAN
+              </span>
+              <span className="text-sm md:text-xl font-mono tracking-[0.4em] uppercase mt-6 text-indigo-300 animate-reveal-up animation-delay-200">
+                Prompts · Graphics · AI
+              </span>
+            </h1>
+
+            <p className="text-lg md:text-xl text-zinc-400 max-w-xl leading-relaxed animate-fade-in-up delay-300">
+              Crafting the visual language of tomorrow. Where human intuition meets neural network precision.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto pt-4">
+              <Link to="/services" className="px-10 py-5 bg-white text-black rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_40px_rgba(255,255,255,0.2)] animate-fade-in-up delay-[400ms]">
+                What We Can Do
+              </Link>
+              <Link to="/contact" className="px-10 py-5 glass rounded-full font-bold uppercase tracking-widest hover:bg-white/10 transition-all animate-fade-in-up delay-[500ms]">
+                Contact
+              </Link>
+            </div>
           </div>
+
+          {/* Right Column: User Card View */}
+          <div className="relative order-1 lg:order-2 flex justify-center lg:justify-end animate-fade-in-up delay-300 perspective-1000">
+            <div className="relative w-full max-w-md aspect-[3/4] glass rounded-[3rem] border border-white/10 p-3 overflow-hidden group shadow-2xl hover:shadow-[0_0_60px_rgba(99,102,241,0.3)] transition-all duration-700 hover:-translate-y-2">
+
+              {/* Inner Container */}
+              <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden bg-gradient-to-b from-white/5 to-black">
+                {/* Background Glow */}
+                <div className="absolute top-0 inset-x-0 h-64 bg-gradient-to-b from-indigo-500/20 to-transparent opacity-50"></div>
+
+                {/* Character Image */}
+                <img
+                  src="/assets/my-images/abhinandan_pandey_transparent_image.png"
+                  className="w-full h-full object-cover object-top transform transition-transform duration-700 group-hover:scale-105"
+                  alt="Abhinandan Pandey Creator"
+                />
+
+                {/* Gradient Overlay for Text Readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+
+                {/* Reveal Content on Hover */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-all duration-500 z-20">
+                  <div className="transform translate-y-10 group-hover:translate-y-0 transition-transform duration-500 text-center p-8">
+                    <div className="w-20 h-20 mx-auto mb-6 rounded-full overflow-hidden border-2 border-white/20">
+                      <img src="/logo.png" className="w-full h-full object-cover" alt="Avatar Small" />
+                    </div>
+                    <h3 className="text-3xl font-bold text-white mb-2">Abhinandan</h3>
+                    <p className="text-zinc-400 text-sm font-mono uppercase tracking-widest mb-8">Creative Director & AI Specialist</p>
+                    <Link to="/portfolio" className="inline-block px-8 py-3 bg-white text-black font-bold rounded-full hover:scale-110 transition-transform">
+                      Explore Portfolio
+                    </Link>
+                  </div>
+                </div>
+              </div>
+
+              {/* Decorative Shine */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent skew-x-12 translate-x-[-200%] group-hover:animate-shine pointer-events-none"></div>
+            </div>
+          </div>
+
         </div>
       </section>
 
@@ -241,19 +284,31 @@ const Home: React.FC = () => {
             </div>
             {/* Interactive Infinite Scroll Container */}
             <div
-              className="relative w-full overflow-hidden"
+              className="relative w-full overflow-hidden group/carousel"
               onMouseEnter={() => setIsHoveringText(true)}
-              onMouseLeave={() => { setIsHoveringText(false); setIsDown(false); }}
-              onTouchStart={() => setIsHoveringText(true)}
-              onTouchEnd={() => setIsHoveringText(false)}
+              onMouseLeave={() => setIsHoveringText(false)}
             >
+              {/* Navigation Buttons */}
+              <button
+                onClick={() => handleScroll('left')}
+                className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-20 w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white text-2xl transition-all duration-300 hover:text-black opacity-0 group-hover/carousel:opacity-100 -translate-x-10 group-hover/carousel:translate-x-0"
+                aria-label="Previous Slide"
+              >
+                <i className="fas fa-chevron-left"></i>
+              </button>
+
+              <button
+                onClick={() => handleScroll('right')}
+                className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-20 w-16 h-16 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white text-2xl transition-all duration-300 hover:text-black opacity-0 group-hover/carousel:opacity-100 translate-x-10 group-hover/carousel:translate-x-0"
+                aria-label="Next Slide"
+              >
+                <i className="fas fa-chevron-right"></i>
+              </button>
+
               <div
                 ref={scrollRef}
-                className={`flex space-x-6 overflow-x-auto no-scrollbar w-full px-4 ${isDown ? 'cursor-grabbing' : 'cursor-grab'}`}
-                style={{ scrollBehavior: 'auto' }} // Ensure immediate scrolling for JS
-                onMouseDown={handleMouseDown}
-                onMouseUp={() => setIsDown(false)}
-                onMouseMove={handleMouseMove}
+                className="flex space-x-6 overflow-x-auto no-scrollbar w-full px-4"
+                style={{ scrollBehavior: 'auto' }}
               >
                 {/* Triple the list to ensure smooth infinite scrolling illusion */}
                 {[...bannerImages, ...bannerImages, ...bannerImages].map((img, idx) => (
@@ -392,6 +447,10 @@ const Home: React.FC = () => {
           50% { opacity: 0.6; }
         }
         .animate-pulse-slow { animation: pulse-slow 5s ease-in-out infinite; }
+        
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );

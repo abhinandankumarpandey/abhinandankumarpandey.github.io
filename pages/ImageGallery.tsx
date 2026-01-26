@@ -152,7 +152,7 @@ const ImageGallery: React.FC = () => {
       <div className="relative pt-40 px-6 max-w-7xl mx-auto pb-40">
         <div className="flex flex-col md:flex-row justify-between items-end mb-24 gap-8 animate-reveal">
           <div>
-            <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-none text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-white/40 mix-blend-difference">
+            <h1 className="text-7xl md:text-[10rem] font-black tracking-tighter leading-none text-gradient-liquid">
               GALLERY.
             </h1>
             <p className="text-indigo-300 font-mono text-[10px] uppercase tracking-[0.3em] mt-6 ml-2">
@@ -163,8 +163,8 @@ const ImageGallery: React.FC = () => {
             <button
               onClick={() => setFilter('all')}
               className={`px-6 py-2 glass rounded-full text-[10px] uppercase tracking-[0.2em] transition-all border ${filter === 'all'
-                  ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-                  : 'border-white/10 hover:bg-white/10 text-zinc-400'
+                ? 'bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                : 'border-white/10 hover:bg-white/10 text-zinc-400'
                 }`}
             >
               #All
@@ -174,8 +174,8 @@ const ImageGallery: React.FC = () => {
                 key={t}
                 onClick={() => setFilter(t)}
                 className={`px-6 py-2 glass rounded-full text-[10px] uppercase tracking-[0.2em] transition-all border ${filter === t
-                    ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                    : 'border-white/10 hover:bg-white/10 text-zinc-400'
+                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                  : 'border-white/10 hover:bg-white/10 text-zinc-400'
                   }`}
               >
                 #{t}
@@ -184,8 +184,8 @@ const ImageGallery: React.FC = () => {
             <button
               onClick={() => setFilter('video')}
               className={`px-6 py-2 glass rounded-full text-[10px] uppercase tracking-[0.2em] transition-all border ${filter === 'video'
-                  ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent shadow-[0_0_20px_rgba(168,85,247,0.4)]'
-                  : 'border-white/10 hover:bg-white/10 text-zinc-400'
+                ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white border-transparent shadow-[0_0_20px_rgba(168,85,247,0.4)]'
+                : 'border-white/10 hover:bg-white/10 text-zinc-400'
                 }`}
             >
               #Video

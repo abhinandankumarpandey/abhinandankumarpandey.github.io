@@ -97,6 +97,29 @@
             -webkit-text-fill-color: transparent;
         }
 
+        .text-gradient-liquid {
+            background: linear-gradient(45deg, #00C6FF, #0072FF, #8E24AA, #FF007F, #00C6FF);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: liquid-flow 8s ease-in-out infinite;
+        }
+
+        @keyframes liquid-flow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
         ::-webkit-scrollbar {
             width: 5px;
         }

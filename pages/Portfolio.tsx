@@ -106,8 +106,8 @@ const Portfolio: React.FC = () => {
           </div>
           <div className="text-center lg:text-left">
             <h1 className="text-6xl md:text-8xl font-bold tracking-tighter mb-4 leading-none flex flex-wrap items-baseline gap-4 justify-center lg:justify-start">
-              ABHINANDAN
-              <span className="text-3xl md:text-5xl text-zinc-500 tracking-wide font-light">Pandey</span>
+              <span className="text-gradient-liquid">ABHINANDAN</span>
+              <span className="text-3xl md:text-5xl tracking-wide font-light text-gradient-liquid">Pandey</span>
             </h1>
             <p className="text-3xl font-light text-zinc-400 mb-8 italic">"Blending raw automation with human creativity."</p>
             <div className="space-y-4 text-zinc-500 text-lg max-w-xl">
