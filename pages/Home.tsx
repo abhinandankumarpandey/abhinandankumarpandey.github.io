@@ -43,7 +43,9 @@ const Home: React.FC = () => {
   const [trail, setTrail] = useState<{ x: number, y: number, id: number, img: string, ratio: string, rotate: number, alt?: string }[]>([]);
   const [dbTrailImages, setDbTrailImages] = useState<any[]>([]);
   const [properties, setProperties] = useState<any[]>([]);
-  const [scrollY, setScrollY] = useState(0);
+  // const [scrollY, setScrollY] = useState(0); // Removed state to prevent re-renders
+  const parallaxRef = React.useRef<HTMLDivElement>(null);
+  const lastTrailTime = React.useRef(0);
   const [isHoveringText, setIsHoveringText] = useState(false);
   const [impactIndex, setImpactIndex] = useState(0);
 
@@ -88,8 +90,10 @@ const Home: React.FC = () => {
       const x = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
-      if (Date.now() % 8 === 0) {
-        const id = Date.now();
+      const now = Date.now();
+      if (now - lastTrailTime.current > 50) { // Throttle to ~20fps for performance
+        lastTrailTime.current = now;
+        const id = now;
         const pool = dbTrailImages.length > 0 ? dbTrailImages : defaultTrail;
         const selection = pool[Math.floor(Math.random() * pool.length)];
         setTrail(prev => [...prev.slice(-10), { x, y, id, img: selection.url, ratio: selection.ratio || 'aspect-square', rotate: (Math.random() - 0.5) * 20, alt: selection.alt || 'abhinandan_creative_trail' }]);
@@ -97,14 +101,27 @@ const Home: React.FC = () => {
       }
     };
 
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('touchstart', handleMove);
-    window.addEventListener('scroll', () => setScrollY(window.scrollY));
+    const handleScrollParallax = () => {
+      if (parallaxRef.current) {
+        const scrollY = window.scrollY;
+        requestAnimationFrame(() => {
+          if (parallaxRef.current) {
+            parallaxRef.current.style.transform = `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)`;
+          }
+        });
+      }
+    };
+
+    window.addEventListener('mousemove', handleMove, { passive: true });
+    window.addEventListener('touchmove', handleMove, { passive: true });
+    window.addEventListener('touchstart', handleMove, { passive: true });
+    window.addEventListener('scroll', handleScrollParallax, { passive: true });
+
     return () => {
       window.removeEventListener('mousemove', handleMove);
       window.removeEventListener('touchmove', handleMove);
       window.removeEventListener('touchstart', handleMove);
+      window.removeEventListener('scroll', handleScrollParallax);
     };
   }, [dbTrailImages]);
 
@@ -186,7 +203,7 @@ const Home: React.FC = () => {
       <section className="min-h-[110vh] relative flex items-center justify-center overflow-hidden pt-20 pb-20">
 
         {/* Parallax Background */}
-        <div className="absolute inset-0 will-change-transform" style={{ transform: `scale(${1 + scrollY * 0.0003}) translateY(${scrollY * 0.1}px)` }}>
+        <div ref={parallaxRef} className="absolute inset-0 will-change-transform" style={{ transform: 'scale(1) translateY(0px)' }}>
           <div className="absolute inset-0 bg-cover bg-center opacity-30 animate-hero-breathe" style={{ backgroundImage: `url('https://github.com/abhinandankumarpandey/website-assets/blob/master/website_backgrounds/hero_landing.webp?raw=true')` }} />
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/20 via-black/50 to-purple-900/20 mix-blend-overlay"></div>
           <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]"></div>
