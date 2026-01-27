@@ -91,12 +91,12 @@ const Home: React.FC = () => {
       const y = 'touches' in e ? e.touches[0].clientY : e.clientY;
 
       const now = Date.now();
-      if (now - lastTrailTime.current > 50) { // Throttle to ~20fps for performance
+      if (now - lastTrailTime.current > 150) { // Throttle to prevent overwhelming effect
         lastTrailTime.current = now;
         const id = now;
         const pool = dbTrailImages.length > 0 ? dbTrailImages : defaultTrail;
         const selection = pool[Math.floor(Math.random() * pool.length)];
-        setTrail(prev => [...prev.slice(-10), { x, y, id, img: selection.url, ratio: selection.ratio || 'aspect-square', rotate: (Math.random() - 0.5) * 20, alt: selection.alt || 'abhinandan_creative_trail' }]);
+        setTrail(prev => [...prev.slice(-8), { x, y, id, img: selection.url, ratio: selection.ratio || 'aspect-square', rotate: (Math.random() - 0.5) * 20, alt: selection.alt || 'abhinandan_creative_trail' }]);
         setTimeout(() => setTrail(prev => prev.filter(t => t.id !== id)), 1000);
       }
     };
@@ -193,8 +193,8 @@ const Home: React.FC = () => {
 
       {/* Floating Trail Images */}
       {!isHoveringText && trail.map(t => (
-        <div key={t.id} className={`fixed pointer-events-none z-[60] w-64 md:w-80 rounded-[2.5rem] overflow-hidden shadow-2xl border border-white/10 animate-image-float ${t.ratio}`}
-          style={{ left: t.x - 160, top: t.y - 120, transform: `rotate(${t.rotate}deg)` }}>
+        <div key={t.id} className={`fixed pointer-events-none z-[60] w-32 md:w-48 rounded-[1.5rem] overflow-hidden shadow-xl border border-white/10 animate-image-float ${t.ratio}`}
+          style={{ left: t.x - 80, top: t.y - 60, transform: `rotate(${t.rotate}deg)` }}>
           <img src={t.img} className="w-full h-full object-cover" alt={t.alt || "abhinandan_creative_trail"} loading="eager" />
         </div>
       ))}
